@@ -16,23 +16,23 @@ export class AppComponent {
     const myfileSchema = new SchemaFile([
       {
         nameColumn: 'col1',
-        type: 'string',
         required: true,
-        lengthMin: 9,
+        length: 9,
       },
       {
         nameColumn: 'col2',
-        type: 'number',
-        lengthMin: 9,
+        length: 9,
         required: true,
+        reg: /^\d+$/,
       },
       {
         nameColumn: 'col3',
-        type: 'string',
+        required: true,
+        includeString: ['rojo', 'verde'],
       },
       {
         nameColumn: 'col4',
-        type: 'string',
+        required: true,
       },
     ]);
     if (!file) return;
@@ -44,7 +44,7 @@ export class AppComponent {
       this.validateFile(myfileSchema.getFileModelSchema, this.recordsArray);
     };
   }
-  validateFile(schema: any, dataFile: any) {
+  validateFile(schema: any, dataFile: string[]) {
     if (dataFile[0].split(';').length !== schema.length) {
       console.warn('Error: El squema no concuerda con los datos del archivo.');
       return;
@@ -64,38 +64,47 @@ export class AppComponent {
                 );
             }
             // Valida la logitud minima de caracteres que debe tener el campo
-            if (schema[rowItemIndex]?.lengthMin) {
-              rowItem.toString().length < schema[rowItemIndex].lengthMin &&
+            if (schema[rowItemIndex]?.length) {
+              rowItem.toString().length !== schema[rowItemIndex].length &&
                 this.errors.push(
                   `Error en la columna ${
                     schema[rowItemIndex].nameColumn
-                  } linea ${dataFileRowIndex + 1}, el campom es menor a ${
-                    schema[rowItemIndex].lengthMin
+                  } linea ${dataFileRowIndex + 1}, el campom tiene que tener ${
+                    schema[rowItemIndex].length
                   } digitos.`
                 );
             }
             // Valida que el tipo de datos corresponda a lo indicado en el eschema
-            if (schema[rowItemIndex]?.type) {
-              console.log(
-                'app.component LINE 79 =>',
-                rowItem,
-                typeof rowItem,
-                schema[rowItemIndex]?.type
-              );
-              // if (typeof rowItem !== schema[rowItemIndex]?.type) {
-              //   this.errors.push(
-              //     `Error en la columna ${
-              //       schema[rowItemIndex].nameColumn
-              //     } linea ${dataFileRowIndex + 1}, el campo no es de tipo ${
-              //       schema[rowItemIndex]?.type
-              //     }`
-              //   );
-              // }
+            if (schema[rowItemIndex]?.reg) {
+              !schema[rowItemIndex]?.reg.test(rowItem) &&
+                this.errors.push(
+                  `Error en la columna ${
+                    schema[rowItemIndex].nameColumn
+                  } linea ${
+                    dataFileRowIndex + 1
+                  }, el campo no coincide con el patron de la exprecion regular ${
+                    schema[rowItemIndex].reg
+                  }.`
+                );
+            }
+            // Valida qie solo se incluya valores envidos en el array de string
+            if (schema[rowItemIndex]?.includeString) {
+              !schema[rowItemIndex]?.includeString.includes(rowItem) &&
+                this.errors.push(
+                  `Error en la columna ${
+                    schema[rowItemIndex].nameColumn
+                  } linea ${
+                    dataFileRowIndex + 1
+                  }, el campo no incluyen los sigientes valores ${
+                    schema[rowItemIndex]?.includeString
+                  }.`
+                );
             }
           }
         }
       });
     });
+
     console.log('app.component LINE 87 =>', this.errors);
   }
 }
