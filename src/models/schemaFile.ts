@@ -4,21 +4,17 @@ interface InterfaceFile {
   length?: number;
   reg?: object;
   includeString?: string[];
+  unique?: boolean;
 }
 interface IFunctions {
-  (num1: number, num2: number): void;
+  comparatorDate?: (startDate: any, endDate: any) => string;
 }
 export class SchemaFile {
   private modelFile: InterfaceFile[];
-
-  constructor(model: InterfaceFile[], prueba: Function = function () {}) {
+  constructor(model: InterfaceFile[]) {
     this.modelFile = model;
-    prueba(this.modelFile[0].nameColumn);
   }
   get getFileModelSchema() {
     return this.modelFile;
-  }
-  comparato(item1: any, item2: any) {
-    console.log('schemaFile LINE 20 =>', item1, item2);
   }
 }

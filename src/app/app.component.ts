@@ -18,11 +18,13 @@ export class AppComponent {
         nameColumn: 'col1',
         required: true,
         length: 9,
+        unique: true,
       },
       {
         nameColumn: 'col2',
         length: 9,
         required: true,
+        unique: true,
         reg: /^\d+$/,
       },
       {
@@ -45,6 +47,8 @@ export class AppComponent {
     };
   }
   validateFile(schema: any, dataFile: string[]) {
+    let tempColumnData: string[] = [];
+
     if (dataFile[0].split(';').length !== schema.length) {
       console.warn('Error: El squema no concuerda con los datos del archivo.');
       return;
@@ -87,7 +91,7 @@ export class AppComponent {
                   }.`
                 );
             }
-            // Valida qie solo se incluya valores envidos en el array de string
+            // Valida que solo se incluya valores envidos en el array de string
             if (schema[rowItemIndex]?.includeString) {
               !schema[rowItemIndex]?.includeString.includes(rowItem) &&
                 this.errors.push(
@@ -100,10 +104,30 @@ export class AppComponent {
                   }.`
                 );
             }
+            // Valida que la columna solo contenga datos no repetidos
+            if (schema[rowItemIndex]?.unique) {
+              tempColumnData.push(rowItem);
+              // console.log('app.component LINE 109 =>', tempColumnData);
+              let repetidos: string[] = [];
+              let temporal: string[] = [];
+              tempColumnData.forEach((value, index) => {
+                temporal = Object.assign([], tempColumnData);
+                temporal.splice(index, 1);
+                if (
+                  temporal.indexOf(value) != -1 &&
+                  repetidos.indexOf(value) == -1
+                )
+                  repetidos.push(value);
+              });
+              repetidos.length > 0 &&
+                this.errors.push(
+                  `Error en la columna ${schema[rowItemIndex].nameColumn}, La columna tiene valores duplicados.`
+                );
+            }
           }
         }
       });
-    });
+    }); // end
 
     console.log('app.component LINE 87 =>', this.errors);
   }
