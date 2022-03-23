@@ -15,26 +15,37 @@ export class AppComponent {
     const file: File = fileUpload.target.files[0];
     const myfileSchema = new SchemaFile([
       {
-        nameColumn: 'col1',
+        name: 'col1',
+        index: 0,
         required: true,
-        length: 9,
+        // length: 9,
         unique: true,
+        include: ['rojo', 'verde'],
       },
       {
-        nameColumn: 'col2',
+        name: 'col2',
+        index: 1,
         length: 9,
         required: true,
-        unique: true,
         reg: /^\d+$/,
+        unique: true,
       },
       {
-        nameColumn: 'col3',
+        name: 'col3',
+        index: 2,
         required: true,
-        includeString: ['rojo', 'verde'],
+        include: ['rojo', 'verde'],
       },
       {
-        nameColumn: 'col4',
+        name: 'col4',
+        index: 3,
         required: true,
+      },
+      {
+        name: 'col5',
+        index: 4,
+        required: true,
+        unique: true,
       },
     ]);
     if (!file) return;
@@ -47,88 +58,114 @@ export class AppComponent {
     };
   }
   validateFile(schema: any, dataFile: string[]) {
-    let tempColumnData: string[] = [];
-
+    let dataError = new Set();
+    let arrRowTemp: string[] = [];
+    let objFile: any = {};
     if (dataFile[0].split(';').length !== schema.length) {
       console.warn('Error: El squema no concuerda con los datos del archivo.');
       return;
     }
-    dataFile.forEach((dataFileRow: any, dataFileRowIndex: number) => {
-      let arrRowTemp = dataFileRow.split(';');
-      arrRowTemp.forEach((rowItem: any, rowItemIndex: number) => {
+    for (
+      let dataFileRowIndex = 0;
+      dataFileRowIndex < dataFile.length;
+      dataFileRowIndex++
+    ) {
+      arrRowTemp = dataFile[dataFileRowIndex].split(';');
+      for (
+        let rowItemIndex = 0;
+        rowItemIndex < arrRowTemp.length;
+        rowItemIndex++
+      ) {
         for (let schemaIndex = 0; schemaIndex < schema.length; schemaIndex++) {
           if (schemaIndex === rowItemIndex) {
-            // Valida si el campo es requerido
-            if (schema[rowItemIndex]?.required) {
-              rowItem.length === 0 &&
-                this.errors.push(
-                  `Error en la columna ${
-                    schema[rowItemIndex].nameColumn
-                  } linea ${dataFileRowIndex + 1}, el campom es requrido.`
-                );
+            if (!objFile.hasOwnProperty([schema[schemaIndex].name])) {
+              objFile = {
+                ...objFile,
+                [schema[schemaIndex].name]: [],
+              };
             }
-            // Valida la logitud minima de caracteres que debe tener el campo
-            if (schema[rowItemIndex]?.length) {
-              rowItem.toString().length !== schema[rowItemIndex].length &&
-                this.errors.push(
-                  `Error en la columna ${
-                    schema[rowItemIndex].nameColumn
-                  } linea ${dataFileRowIndex + 1}, el campom tiene que tener ${
-                    schema[rowItemIndex].length
-                  } digitos.`
-                );
-            }
-            // Valida que el tipo de datos corresponda a lo indicado en el eschema
-            if (schema[rowItemIndex]?.reg) {
-              !schema[rowItemIndex]?.reg.test(rowItem) &&
-                this.errors.push(
-                  `Error en la columna ${
-                    schema[rowItemIndex].nameColumn
-                  } linea ${
-                    dataFileRowIndex + 1
-                  }, el campo no coincide con el patron de la exprecion regular ${
-                    schema[rowItemIndex].reg
-                  }.`
-                );
-            }
-            // Valida que solo se incluya valores envidos en el array de string
-            if (schema[rowItemIndex]?.includeString) {
-              !schema[rowItemIndex]?.includeString.includes(rowItem) &&
-                this.errors.push(
-                  `Error en la columna ${
-                    schema[rowItemIndex].nameColumn
-                  } linea ${
-                    dataFileRowIndex + 1
-                  }, el campo no incluyen los sigientes valores ${
-                    schema[rowItemIndex]?.includeString
-                  }.`
-                );
-            }
-            // Valida que la columna solo contenga datos no repetidos
-            if (schema[rowItemIndex]?.unique) {
-              tempColumnData.push(rowItem);
-              // console.log('app.component LINE 109 =>', tempColumnData);
-              let repetidos: string[] = [];
-              let temporal: string[] = [];
-              tempColumnData.forEach((value, index) => {
-                temporal = Object.assign([], tempColumnData);
-                temporal.splice(index, 1);
-                if (
-                  temporal.indexOf(value) != -1 &&
-                  repetidos.indexOf(value) == -1
-                )
-                  repetidos.push(value);
-              });
-              repetidos.length > 0 &&
-                this.errors.push(
-                  `Error en la columna ${schema[rowItemIndex].nameColumn}, La columna tiene valores duplicados.`
-                );
-            }
+            objFile[schema[schemaIndex].name].push(arrRowTemp[schemaIndex]);
           }
         }
-      });
-    }); // end
+      }
+    }
+    for (let schemaIndex = 0; schemaIndex < schema.length; schemaIndex++) {
+      if (schema[schemaIndex]?.unique) {
+        let repetidos: string[] = [];
+        let temporal: string[] = [];
+        objFile[schema[schemaIndex].name].forEach(
+          (value: any, index: number) => {
+            temporal = Object.assign([], objFile[schema[schemaIndex].name]);
+            temporal.splice(index, 1);
+            if (
+              temporal.indexOf(value.toLowerCase().trim()) != -1 &&
+              repetidos.indexOf(value.toLowerCase().trim()) == -1
+            ) {
+              repetidos.push(value.toLowerCase().trim());
+            }
+            repetidos.length > 0 &&
+              dataError.add(
+                `ERROR en la columna ${schema[schemaIndex].name}, La columna tiene valores duplicados.`
+              );
+          }
+        );
+      }
+      if (schema[schemaIndex]?.required) {
+        objFile[schema[schemaIndex].name].forEach(
+          (value: any, index: number) => {
+            value.toString().trim().length === 0 &&
+              dataError.add(
+                `ERROR en la columna ${schema[schemaIndex].name}, LINEA ${
+                  index + 1
+                } El campo es requerido.`
+              );
+          }
+        );
+      }
+      if (schema[schemaIndex]?.length) {
+        objFile[schema[schemaIndex].name].forEach(
+          (value: any, index: number) => {
+            value.toString().trim().length !== schema[schemaIndex]?.length &&
+              dataError.add(
+                `ERROR en la columna ${schema[schemaIndex].name}, LINEA ${
+                  index + 1
+                } El campo debe de tener el numero de caracteres indicado (${
+                  schema[schemaIndex]?.length
+                }).`
+              );
+          }
+        );
+      }
+      if (schema[schemaIndex]?.include) {
+        objFile[schema[schemaIndex].name].forEach(
+          (value: any, index: number) => {
+            !schema[schemaIndex]?.include.includes(value) &&
+              dataError.add(
+                `ERROR en la columna ${schema[schemaIndex].name}, LINEA ${
+                  index + 1
+                } El Campo solo puede incluir los siguientes valores (${
+                  schema[schemaIndex]?.include
+                }).`
+              );
+          }
+        );
+      }
+      if (schema[schemaIndex]?.reg) {
+        objFile[schema[schemaIndex].name].forEach(
+          (value: any, index: number) => {
+            !schema[schemaIndex]?.reg.test(value) &&
+              dataError.add(
+                `ERROR en la columna ${schema[schemaIndex].name}, LINEA ${
+                  index + 1
+                } El Campono cumple los criterios de la expresión regular (${
+                  schema[schemaIndex]?.reg
+                }).`
+              );
+          }
+        );
+      }
+    }
 
-    console.log('app.component LINE 87 =>', this.errors);
+    console.log(dataError);
   }
 }

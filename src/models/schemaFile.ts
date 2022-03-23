@@ -1,14 +1,14 @@
 interface InterfaceFile {
-  nameColumn: string;
+  name: string;
+  index: number;
   required?: boolean;
   length?: number;
   reg?: object;
-  includeString?: string[];
+  include?: string[];
   unique?: boolean;
+  message?: string;
 }
-interface IFunctions {
-  comparatorDate?: (startDate: any, endDate: any) => string;
-}
+
 export class SchemaFile {
   private modelFile: InterfaceFile[];
   constructor(model: InterfaceFile[]) {
