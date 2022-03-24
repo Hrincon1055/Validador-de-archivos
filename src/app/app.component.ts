@@ -20,7 +20,6 @@ export class AppComponent {
         required: true,
         // length: 9,
         unique: true,
-        include: ['rojo', 'verde'],
       },
       {
         name: 'col2',
@@ -46,6 +45,15 @@ export class AppComponent {
         index: 4,
         required: true,
         unique: true,
+      },
+      {
+        name: 'fechaInicio',
+        index: 5,
+      },
+      {
+        name: 'fechaFin',
+        index: 6,
+        refIsGreaterDate: 'fechaInicio',
       },
     ]);
     if (!file) return;
@@ -157,10 +165,36 @@ export class AppComponent {
               dataError.add(
                 `ERROR en la columna ${schema[schemaIndex].name}, LINEA ${
                   index + 1
-                } El Campono cumple los criterios de la expresión regular (${
+                } El Campo no cumple los criterios de la expresión regular (${
                   schema[schemaIndex]?.reg
                 }).`
               );
+          }
+        );
+      }
+      if (schema[schemaIndex]?.refIsGreaterDate) {
+        objFile[schema[schemaIndex].name].forEach(
+          (valueFechaFin: any, indexFechaFin: number) => {
+            objFile[schema[schemaIndex]?.refIsGreaterDate].forEach(
+              (valueFechaInicio: any, indexFechaInicio: number) => {
+                if (indexFechaFin === indexFechaInicio) {
+                  new Date(valueFechaInicio) > new Date(valueFechaFin) &&
+                    dataError.add(
+                      `ERROR en la columna ${
+                        schema[schemaIndex]?.refIsGreaterDate
+                      }, LINEA ${
+                        indexFechaInicio + 1
+                      }, La fecha de inicio no puede ser mayor a la fecha fin.`
+                    );
+
+                  // console.log(
+                  //   'app.component LINE 182 =>',
+                  //   new Date(valueFechaInicio)
+                  //   // new Date(valueFechaFin)
+                  // );
+                }
+              }
+            );
           }
         );
       }
@@ -169,3 +203,12 @@ export class AppComponent {
     console.log(dataError);
   }
 }
+//     {
+//       name: 'fechaInicio',
+//       index: 5,
+//     },
+//     {
+//       name: 'fechaFin',
+//       index: 6,
+//       refIsGreaterDate: 'fechaInicio',
+//     },

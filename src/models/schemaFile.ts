@@ -7,6 +7,7 @@ interface InterfaceFile {
   include?: string[];
   unique?: boolean;
   message?: string;
+  refIsGreaterDate?: string;
 }
 
 export class SchemaFile {
