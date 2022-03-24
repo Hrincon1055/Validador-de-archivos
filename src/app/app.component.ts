@@ -186,12 +186,6 @@ export class AppComponent {
                         indexFechaInicio + 1
                       }, La fecha de inicio no puede ser mayor a la fecha fin.`
                     );
-
-                  // console.log(
-                  //   'app.component LINE 182 =>',
-                  //   new Date(valueFechaInicio)
-                  //   // new Date(valueFechaFin)
-                  // );
                 }
               }
             );
