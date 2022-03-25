@@ -1,9 +1,8 @@
-interface InterfaceFile {
+export interface InterfaceFile {
   name: string;
-  index: number;
   required?: boolean;
   length?: number;
-  reg?: object;
+  reg?: any;
   include?: string[];
   unique?: boolean;
   message?: string;
@@ -15,7 +14,7 @@ export class SchemaFile {
   constructor(model: InterfaceFile[]) {
     this.modelFile = model;
   }
-  get getFileModelSchema() {
+  get getFileModelSchema(): InterfaceFile[] {
     return this.modelFile;
   }
 }
