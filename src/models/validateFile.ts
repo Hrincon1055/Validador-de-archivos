@@ -7,6 +7,12 @@ export const validateFile = (
 ) => {
   return new Promise((resolve, reject) => {
     const infoFile: File = fileUpload.target.files[0];
+    const typeFile: string = fileUpload.target.files[0].name
+      .split('.')
+      .slice(
+        fileUpload.target.files[0].name.split('.').length - 1,
+        fileUpload.target.files[0].name.split('.').length
+      )[0];
     let dataFile: string[] = [];
     const reader = new FileReader();
     reader.readAsText(infoFile);
@@ -18,6 +24,10 @@ export const validateFile = (
         let arrRowTemp: string[] = [];
         let errorsFile: any[] = [];
         let objFile: any = {};
+        if (typeFile !== 'csv') {
+          reject('Error: El tipo de archivo no es permitido.');
+          return;
+        }
         if (dataFile[0].split(separator).length !== schema.length) {
           reject('Error: El squema no concuerda con los datos del archivo.');
           return;
