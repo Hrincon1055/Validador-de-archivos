@@ -172,6 +172,40 @@ export const validateFile = (
               }
             );
           }
+          if (schema[schemaIndex]?.minLength) {
+            objFile[schema[schemaIndex].name].forEach(
+              (value: string, index: number) => {
+                value.toString().trim().length <
+                  schema[schemaIndex]?.minLength! &&
+                  dataError.add(
+                    `ERROR en la columna ${schema[schemaIndex].name}, LINEA ${
+                      index + 1
+                    }, ${
+                      schema[schemaIndex].message
+                        ? schema[schemaIndex].message
+                        : `El campo solo permite minimo ${schema[schemaIndex]?.minLength} caracteres`
+                    }`
+                  );
+              }
+            );
+          }
+          if (schema[schemaIndex]?.maxLength) {
+            objFile[schema[schemaIndex].name].forEach(
+              (value: string, index: number) => {
+                value.toString().trim().length >
+                  schema[schemaIndex]?.maxLength! &&
+                  dataError.add(
+                    `ERROR en la columna ${schema[schemaIndex].name}, LINEA ${
+                      index + 1
+                    }, ${
+                      schema[schemaIndex].message
+                        ? schema[schemaIndex].message
+                        : `El campo solo permite maximo ${schema[schemaIndex]?.maxLength} caracteres`
+                    }`
+                  );
+              }
+            );
+          }
         }
         errorsFile = Array.from(new Set(dataError));
         resolve({

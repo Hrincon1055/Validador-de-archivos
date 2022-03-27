@@ -31,7 +31,7 @@ export class AppComponent {
       {
         name: 'col3',
         required: true,
-        include: ['rojo', 'verde'],
+        maxLength: 5,
       },
       {
         name: 'col4',
@@ -39,8 +39,6 @@ export class AppComponent {
       },
       {
         name: 'col5',
-        required: true,
-        unique: true,
       },
       {
         name: 'fechaInicio',
