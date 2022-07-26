@@ -16,54 +16,51 @@ export class AppComponent {
     // const file: File = fileUpload.target.files[0];
     const myfileSchema = new SchemaFile([
       {
-        name: 'col1',
+        name: 'nombre_usuario',
         required: true,
-        // length: 9,
+        isText: true,
+      },
+      {
+        name: 'numero_documento',
+        required: true,
         unique: true,
+        minLength: 8,
       },
       {
-        name: 'col2',
-        length: 9,
+        name: 'tipo_documento',
         required: true,
-        reg: /^\d+$/,
+        include: ['CC', 'CI', 'TI'],
+      },
+      {
+        name: 'email',
+        required: true,
         unique: true,
+        isEmail: true,
       },
       {
-        name: 'col3',
-        required: true,
-        maxLength: 5,
-      },
-      {
-        name: 'col4',
+        name: 'fecha_inicio',
         required: true,
       },
       {
-        name: 'col5',
-      },
-      {
-        name: 'fechaInicio',
-        required: true,
-      },
-      {
-        name: 'fechaFin',
-        refIsGreaterDate: 'fechaInicio',
+        name: 'fecha_fin',
+        refIsGreaterDate: 'fecha_inicio',
         message: 'Mensaje personalizado fechaFin',
+      },
+      {
+        name: 'tipo_Pago',
+        required: true,
+        include: ['1', '2', '3'],
+      },
+      {
+        name: 'valor_poliza',
       },
     ]);
     validateFile(myfileSchema.getFileModelSchema, fileUpload)
       .then((response) => {
-        console.log('app.component LINE 61 =>', response);
+        console.log('app.component LINE 61 =>', response.fileErrors);
       })
       .catch((err) => {
         console.log('app.component LINE 63 =>', err);
       });
   }
 }
-
-// validateFile(myfileSchema.getFileModelSchema, this.recordsArray)
-//   .then((response) => {
-//     console.log('app.component LINE 61 =>', response);
-//   })
-//   .catch((err) => {
-//     console.log('app.component LINE 63 =>', err);
-//   });

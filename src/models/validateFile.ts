@@ -1,10 +1,22 @@
 import { InterfaceFile } from './schemaFile';
+import { fileConverter } from '../helpers/fileConverter';
+import { validTetx } from '../helpers/rules';
+import {
+  validLength,
+  validInclude,
+  validReg,
+  validRefIsGreaterDate,
+  duplicateValue,
+  validEmail,
+  validMaxLength,
+  validMinLength,
+} from '../helpers/rules';
 
 export const validateFile = (
   schema: InterfaceFile[],
   fileUpload: any,
-  separator: string = ';'
-) => {
+  separator: ';' | ',' = ';'
+): Promise<{ fileErrors: string[]; dataFile: string[]; infoFile: File }> => {
   return new Promise((resolve, reject) => {
     const infoFile: File = fileUpload.target.files[0];
     const typeFile: string = fileUpload.target.files[0].name
@@ -20,196 +32,51 @@ export const validateFile = (
       let data = reader.result;
       dataFile = (<string>data).split(/\r\n|\n/);
       try {
-        let dataError = new Set();
-        let arrRowTemp: string[] = [];
-        let errorsFile: any[] = [];
-        let objFile: any = {};
+        let dataError = new Set<string>();
+        let fileErrors: any[] = [];
+        let objFile: Object = {};
         if (typeFile !== 'csv') {
           reject('Error: El tipo de archivo no es permitido.');
           return;
         }
         if (dataFile[0].split(separator).length !== schema.length) {
-          reject('Error: El squema no concuerda con los datos del archivo.');
+          reject('Error: El esquema no concuerda con los datos del archivo.');
           return;
         }
-        for (
-          let dataFileRowIndex = 0;
-          dataFileRowIndex < dataFile.length;
-          dataFileRowIndex++
-        ) {
-          arrRowTemp = dataFile[dataFileRowIndex].split(';');
-          for (
-            let rowItemIndex = 0;
-            rowItemIndex < arrRowTemp.length;
-            rowItemIndex++
-          ) {
-            for (
-              let schemaIndex = 0;
-              schemaIndex < schema.length;
-              schemaIndex++
-            ) {
-              if (schemaIndex === rowItemIndex) {
-                if (!objFile.hasOwnProperty([schema[schemaIndex].name])) {
-                  objFile = {
-                    ...objFile,
-                    [schema[schemaIndex].name]: [],
-                  };
-                }
-                objFile[schema[schemaIndex].name].push(arrRowTemp[schemaIndex]);
-              }
-            }
+        objFile = fileConverter(dataFile, schema, separator);
+        schema.forEach((schema: InterfaceFile) => {
+          if (schema?.unique && schema?.unique === true) {
+            duplicateValue(objFile, schema, dataError);
           }
-        }
-        for (let schemaIndex = 0; schemaIndex < schema.length; schemaIndex++) {
-          if (schema[schemaIndex]?.unique) {
-            let repetidos: string[] = [];
-            let temporal: string[] = [];
-            objFile[schema[schemaIndex].name].forEach(
-              (value: string, index: number) => {
-                temporal = Object.assign([], objFile[schema[schemaIndex].name]);
-                temporal.splice(index, 1);
-                if (
-                  temporal.indexOf(value.toLowerCase().trim()) != -1 &&
-                  repetidos.indexOf(value.toLowerCase().trim()) == -1
-                ) {
-                  repetidos.push(value.toLowerCase().trim());
-                }
-                repetidos.length > 0 &&
-                  dataError.add(
-                    `ERROR en la columna ${schema[schemaIndex].name},  ${
-                      schema[schemaIndex].message
-                        ? schema[schemaIndex].message
-                        : 'La columna tiene valores duplicados.'
-                    }  `
-                  );
-              }
-            );
+          if (schema?.length && schema?.length! > 0) {
+            validLength(objFile, schema, dataError);
           }
-          if (schema[schemaIndex]?.required) {
-            objFile[schema[schemaIndex].name].forEach(
-              (value: string, index: number) => {
-                value.toString().trim().length === 0 &&
-                  dataError.add(
-                    `ERROR en la columna ${schema[schemaIndex].name}, LINEA ${
-                      index + 1
-                    }, ${
-                      schema[schemaIndex].message
-                        ? schema[schemaIndex].message
-                        : 'El campo es requerido.'
-                    }`
-                  );
-              }
-            );
+          if (schema?.include && schema?.include?.length! > 0) {
+            validInclude(objFile, schema, dataError);
           }
-          if (schema[schemaIndex]?.length) {
-            objFile[schema[schemaIndex].name].forEach(
-              (value: string, index: number) => {
-                value.toString().trim().length !==
-                  schema[schemaIndex]?.length &&
-                  dataError.add(
-                    `ERROR en la columna ${schema[schemaIndex].name}, LINEA ${
-                      index + 1
-                    }, ${
-                      schema[schemaIndex].message
-                        ? schema[schemaIndex].message
-                        : 'El campo debe de tener el numero de caracteres indicado.'
-                    }(${schema[schemaIndex]?.length}).`
-                  );
-              }
-            );
+          if (schema?.reg) {
+            validReg(objFile, schema, dataError);
           }
-          if (schema[schemaIndex]?.include) {
-            objFile[schema[schemaIndex].name].forEach(
-              (value: string, index: number) => {
-                !schema[schemaIndex]?.include!.includes(value) &&
-                  dataError.add(
-                    `ERROR en la columna ${schema[schemaIndex].name}, LINEA ${
-                      index + 1
-                    }, ${
-                      schema[schemaIndex].message
-                        ? schema[schemaIndex].message
-                        : 'El Campo solo puede incluir los siguientes valores.'
-                    } (${schema[schemaIndex]?.include}).`
-                  );
-              }
-            );
+          if (schema?.refIsGreaterDate) {
+            validRefIsGreaterDate(objFile, schema, dataError);
           }
-          if (schema[schemaIndex]?.reg) {
-            objFile[schema[schemaIndex].name].forEach(
-              (value: string, index: number) => {
-                !schema[schemaIndex]?.reg.test(value) &&
-                  dataError.add(
-                    `ERROR en la columna ${schema[schemaIndex].name}, LINEA ${
-                      index + 1
-                    }, ${
-                      schema[schemaIndex].message
-                        ? schema[schemaIndex].message
-                        : 'El Campo no cumple los criterios de la expresión regular .'
-                    } (${schema[schemaIndex]?.reg}).`
-                  );
-              }
-            );
+          if (schema?.minLength && schema?.minLength > 0) {
+            validMinLength(objFile, schema, dataError);
           }
-          if (schema[schemaIndex]?.refIsGreaterDate) {
-            objFile[schema[schemaIndex].name].forEach(
-              (valueFechaFin: string, indexFechaFin: number) => {
-                objFile[schema[schemaIndex]?.refIsGreaterDate!].forEach(
-                  (valueFechaInicio: string, indexFechaInicio: number) => {
-                    if (indexFechaFin === indexFechaInicio) {
-                      new Date(valueFechaInicio) > new Date(valueFechaFin) &&
-                        dataError.add(
-                          `ERROR en la columna ${
-                            schema[schemaIndex]?.refIsGreaterDate
-                          }, LINEA ${indexFechaInicio + 1}, ${
-                            schema[schemaIndex].message
-                              ? schema[schemaIndex].message
-                              : 'La fecha de inicio no puede ser mayor a la fecha fin.'
-                          }`
-                        );
-                    }
-                  }
-                );
-              }
-            );
+          if (schema?.maxLength && schema?.maxLength > 0) {
+            validMaxLength(objFile, schema, dataError);
           }
-          if (schema[schemaIndex]?.minLength) {
-            objFile[schema[schemaIndex].name].forEach(
-              (value: string, index: number) => {
-                value.toString().trim().length <
-                  schema[schemaIndex]?.minLength! &&
-                  dataError.add(
-                    `ERROR en la columna ${schema[schemaIndex].name}, LINEA ${
-                      index + 1
-                    }, ${
-                      schema[schemaIndex].message
-                        ? schema[schemaIndex].message
-                        : `El campo solo permite minimo ${schema[schemaIndex]?.minLength} caracteres`
-                    }`
-                  );
-              }
-            );
+          if (schema?.isEmail && schema?.isEmail === true) {
+            validEmail(objFile, schema, dataError);
           }
-          if (schema[schemaIndex]?.maxLength) {
-            objFile[schema[schemaIndex].name].forEach(
-              (value: string, index: number) => {
-                value.toString().trim().length >
-                  schema[schemaIndex]?.maxLength! &&
-                  dataError.add(
-                    `ERROR en la columna ${schema[schemaIndex].name}, LINEA ${
-                      index + 1
-                    }, ${
-                      schema[schemaIndex].message
-                        ? schema[schemaIndex].message
-                        : `El campo solo permite maximo ${schema[schemaIndex]?.maxLength} caracteres`
-                    }`
-                  );
-              }
-            );
+          if (schema?.isText && schema?.isText === true) {
+            validTetx(objFile, schema, dataError);
           }
-        }
-        errorsFile = Array.from(new Set(dataError));
+        });
+
+        fileErrors = Array.from(new Set(dataError));
         resolve({
-          errorsFile,
+          fileErrors,
           dataFile,
           infoFile,
         });

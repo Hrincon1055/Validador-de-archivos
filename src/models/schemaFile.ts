@@ -9,6 +9,8 @@ export interface InterfaceFile {
   refIsGreaterDate?: string;
   maxLength?: number;
   minLength?: number;
+  isEmail?: boolean;
+  isText?: boolean;
 }
 
 export class SchemaFile {
