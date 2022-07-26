@@ -1,6 +1,6 @@
 import { InterfaceFile } from './schemaFile';
 import { fileConverter } from '../helpers/fileConverter';
-import { validTetx } from '../helpers/rules';
+
 import {
   validLength,
   validInclude,
@@ -10,6 +10,7 @@ import {
   validEmail,
   validMaxLength,
   validMinLength,
+  validTetx,
 } from '../helpers/rules';
 
 export const validateFile = (
