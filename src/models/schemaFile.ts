@@ -2,7 +2,7 @@ export interface InterfaceFile {
   name: string;
   required?: boolean;
   length?: number;
-  reg?: any;
+  reg?: RegExp;
   include?: string[];
   unique?: boolean;
   message?: string;
@@ -11,6 +11,8 @@ export interface InterfaceFile {
   minLength?: number;
   isEmail?: boolean;
   isText?: boolean;
+  isNumber?: boolean;
+  formatterDate?: RegExp;
 }
 
 export class SchemaFile {

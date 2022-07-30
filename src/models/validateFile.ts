@@ -11,6 +11,7 @@ import {
   validMaxLength,
   validMinLength,
   validTetx,
+  validNumber,
 } from '../helpers/rules';
 
 export const validateFile = (
@@ -72,6 +73,9 @@ export const validateFile = (
           }
           if (schema?.isText && schema?.isText === true) {
             validTetx(objFile, schema, dataError);
+          }
+          if (schema?.isNumber && schema?.isNumber === true) {
+            validNumber(objFile, schema, dataError);
           }
         });
 

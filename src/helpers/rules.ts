@@ -1,5 +1,5 @@
 import { InterfaceFile } from '../models/schemaFile';
-import { regexMail, regxText } from '../constants/regex';
+import { regexMail, regxText, regexNumber } from '../constants/regex';
 const indexFila: number = 1;
 export const duplicateValue = (
   objFile: any,
@@ -113,14 +113,16 @@ export const validReg = (
   errorsSet: Set<string>
 ): void => {
   objFile[schema.name].forEach((value: string, index: number) => {
-    !schema?.reg.test(value) &&
-      errorsSet.add(
-        `ERROR en la COLUMNA ${schema.name}, FILA ${index + indexFila}, ${
-          schema.message
-            ? schema.message
-            : 'El campo tiene errores para la exprecion regular indicada.'
-        }`
-      );
+    if (schema?.reg) {
+      !schema?.reg.test(value) &&
+        errorsSet.add(
+          `ERROR en la COLUMNA ${schema.name}, FILA ${index + indexFila}, ${
+            schema.message
+              ? schema.message
+              : 'El campo tiene errores para la exprecion regular indicada.'
+          }`
+        );
+    }
   });
 };
 export const validRefIsGreaterDate = (
@@ -162,6 +164,21 @@ export const validTetx = (
           schema.message
             ? schema.message
             : `El Campo no puede contener caracteres expeciales.`
+        }`
+      );
+  });
+};
+
+export const validNumber = (
+  objFile: any,
+  schema: InterfaceFile,
+  errorsSet: Set<string>
+): void => {
+  objFile[schema.name].forEach((value: string, index: number) => {
+    !regexNumber.test(value.toString().trim()) &&
+      errorsSet.add(
+        `ERROR en la COLUMNA ${schema.name}, FILA ${index + indexFila}, ${
+          schema.message ? schema.message : `El Campo no es un numero valido.`
         }`
       );
   });
