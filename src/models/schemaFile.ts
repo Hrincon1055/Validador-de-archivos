@@ -2,7 +2,7 @@ export interface InterfaceFile {
   name: string;
   required?: boolean;
   length?: number;
-  reg?: RegExp;
+  regex?: { reg: RegExp; message: string };
   include?: string[];
   unique?: boolean;
   message?: string;
@@ -12,8 +12,17 @@ export interface InterfaceFile {
   isEmail?: boolean;
   isText?: boolean;
   isNumber?: boolean;
-  formatterDate?: RegExp;
+  dateFormatReg?: RegExp;
+  conditionalData?: ConditionalData;
+  group?: string;
 }
+export interface ConditionalData {
+  refName: string;
+  objValidator: {
+    [key: string]: string;
+  };
+}
+export type FormatsDate = 'YYYY-MM-DD' | 'MM/DD/YYYY';
 
 export class SchemaFile {
   private modelFile: InterfaceFile[];

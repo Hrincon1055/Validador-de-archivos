@@ -1,3 +1,4 @@
+import * as moment from 'moment';
 import { InterfaceFile } from '../models/schemaFile';
 export const fileConverter = (
   dataFile: string[],
@@ -8,8 +9,8 @@ export const fileConverter = (
   let arrRowTemp: string[] = [];
   dataFile.forEach((dataFile) => {
     arrRowTemp = dataFile.split(separator);
-    arrRowTemp.forEach((arrRowTemp, rowItemIndex) => {
-      schema.forEach((schema, schemaIndex) => {
+    arrRowTemp.forEach((arrRowTemp: string, rowItemIndex: number) => {
+      schema.forEach((schema: InterfaceFile, schemaIndex: number) => {
         if (schemaIndex === rowItemIndex) {
           if (!objFile.hasOwnProperty([schema.name])) {
             objFile = {
@@ -22,5 +23,7 @@ export const fileConverter = (
       });
     });
   });
+  console.log(moment('01-09-2022', 'DD-MM-YYYY'));
+
   return objFile;
 };

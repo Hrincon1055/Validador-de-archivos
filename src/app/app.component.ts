@@ -18,7 +18,11 @@ export class AppComponent {
       {
         name: 'nombre_usuario',
         required: true,
-        isText: true,
+        // isText: true,
+        regex: {
+          reg: /^[^$%&|<>#]*$/,
+          message: 'El campo no puede contener caracteres especiales.',
+        },
       },
       {
         name: 'numero_documento',
@@ -40,7 +44,7 @@ export class AppComponent {
       {
         name: 'fecha_inicio',
         required: true,
-        reg: /(0[1-9]|[12][0-9]|3[01])(0[1-9]|1[012])(19|20)\d\d/,
+        dateFormatReg: /(0[1-9]|[12][0-9]|3[01])(0[1-9]|1[012])(19|20)\d\d/,
       },
       {
         name: 'fecha_fin',
@@ -55,6 +59,15 @@ export class AppComponent {
       {
         name: 'valor_poliza',
         isNumber: true,
+      },
+      {
+        name: 'prueba',
+        required: true,
+        include: ['x', 'y', 'z'],
+        conditionalData: {
+          refName: 'tipo_Pago',
+          objValidator: { '1': 'x', '2': 'y', '3': 'z' },
+        },
       },
     ]);
     validateFile(myfileSchema.getFileModelSchema, fileUpload)

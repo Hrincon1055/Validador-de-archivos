@@ -4,6 +4,7 @@ import { fileConverter } from '../helpers/fileConverter';
 import {
   validLength,
   validInclude,
+  validRequired,
   validReg,
   validRefIsGreaterDate,
   duplicateValue,
@@ -12,6 +13,8 @@ import {
   validMinLength,
   validTetx,
   validNumber,
+  validDateFormatReg,
+  validConditionalData,
 } from '../helpers/rules';
 
 export const validateFile = (
@@ -47,38 +50,46 @@ export const validateFile = (
         }
         objFile = fileConverter(dataFile, schema, separator);
         schema.forEach((schema: InterfaceFile) => {
-          if (schema?.unique && schema?.unique === true) {
+          if (schema.unique && schema.unique === true) {
             duplicateValue(objFile, schema, dataError);
           }
-          if (schema?.length && schema?.length! > 0) {
+          if (schema.required && schema.required === true) {
+            validRequired(objFile, schema, dataError);
+          }
+          if (schema.length && schema.length! > 0) {
             validLength(objFile, schema, dataError);
           }
-          if (schema?.include && schema?.include?.length! > 0) {
+          if (schema.include && schema?.include.length! > 0) {
             validInclude(objFile, schema, dataError);
           }
-          if (schema?.reg) {
+          if (schema.regex) {
             validReg(objFile, schema, dataError);
           }
-          if (schema?.refIsGreaterDate) {
+          if (schema.refIsGreaterDate) {
             validRefIsGreaterDate(objFile, schema, dataError);
           }
-          if (schema?.minLength && schema?.minLength > 0) {
+          if (schema.minLength && schema.minLength > 0) {
             validMinLength(objFile, schema, dataError);
           }
-          if (schema?.maxLength && schema?.maxLength > 0) {
+          if (schema.maxLength && schema.maxLength > 0) {
             validMaxLength(objFile, schema, dataError);
           }
-          if (schema?.isEmail && schema?.isEmail === true) {
+          if (schema.isEmail && schema.isEmail === true) {
             validEmail(objFile, schema, dataError);
           }
-          if (schema?.isText && schema?.isText === true) {
+          if (schema.isText && schema.isText === true) {
             validTetx(objFile, schema, dataError);
           }
-          if (schema?.isNumber && schema?.isNumber === true) {
+          if (schema.isNumber && schema.isNumber === true) {
             validNumber(objFile, schema, dataError);
           }
+          if (schema.dateFormatReg) {
+            validDateFormatReg(objFile, schema, dataError);
+          }
+          if (schema.conditionalData) {
+            validConditionalData(objFile, schema, dataError);
+          }
         });
-
         fileErrors = Array.from(new Set(dataError));
         resolve({
           fileErrors,

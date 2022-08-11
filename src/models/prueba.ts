@@ -11,7 +11,7 @@ export const myfileSchema = new SchemaFile([
     name: 'col2',
     length: 9,
     required: true,
-    reg: /^\d+$/,
+    // reg: /^\d+$/,
     unique: true,
   },
   {
