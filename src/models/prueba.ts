@@ -32,7 +32,5 @@ export const myfileSchema = new SchemaFile([
   },
   {
     name: 'fechaFin',
-    refIsGreaterDate: 'fechaInicio',
-    message: 'Mensaje personalizado fechaFin',
   },
 ]);

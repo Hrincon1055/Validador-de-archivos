@@ -2,19 +2,17 @@ export interface InterfaceFile {
   name: string;
   required?: boolean;
   length?: number;
-  regex?: { reg: RegExp; message: string };
   include?: string[];
   unique?: boolean;
-  message?: string;
-  refIsGreaterDate?: string;
   maxLength?: number;
   minLength?: number;
   isEmail?: boolean;
   isText?: boolean;
   isNumber?: boolean;
-  dateFormatReg?: RegExp;
+  regex?: Regex;
+  dateValidations?: DateValidations;
   conditionalData?: ConditionalData;
-  group?: string;
+  group?: { nameGroup: string; type: 'array' | 'object'; index?: number };
 }
 export interface ConditionalData {
   refName: string;
@@ -22,7 +20,18 @@ export interface ConditionalData {
     [key: string]: string;
   };
 }
-export type FormatsDate = 'YYYY-MM-DD' | 'MM/DD/YYYY';
+export interface DateValidations {
+  dateFormatReg: RegExp;
+  dateFormatString?: FormatsDate;
+  refIsGreaterDateNane?: string;
+  majorToday?: boolean;
+  minorToday?: boolean;
+}
+export interface Regex {
+  reg: RegExp;
+  message: string;
+}
+export type FormatsDate = 'YYYY-MM-DD' | 'MM/DD/YYYY' | 'DD MM YYYY';
 
 export class SchemaFile {
   private modelFile: InterfaceFile[];

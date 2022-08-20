@@ -1,5 +1,8 @@
 import { InterfaceFile } from './schemaFile';
-import { fileConverter } from '../helpers/fileConverter';
+import {
+  fileConverterRules,
+  fileConverterObject,
+} from '../helpers/fileConverter';
 
 import {
   validLength,
@@ -15,6 +18,8 @@ import {
   validNumber,
   validDateFormatReg,
   validConditionalData,
+  validMajorToday,
+  validMinorToday,
 } from '../helpers/rules';
 
 export const validateFile = (
@@ -32,7 +37,7 @@ export const validateFile = (
       )[0];
     let dataFile: string[] = [];
     const reader = new FileReader();
-    reader.readAsText(infoFile);
+    reader.readAsText(infoFile, 'ISO-8859-1');
     reader.onload = () => {
       let data = reader.result;
       dataFile = (<string>data).split(/\r\n|\n/);
@@ -40,6 +45,7 @@ export const validateFile = (
         let dataError = new Set<string>();
         let fileErrors: any[] = [];
         let objFile: Object = {};
+        let prueba: Object = {};
         if (typeFile !== 'csv') {
           reject('Error: El tipo de archivo no es permitido.');
           return;
@@ -48,7 +54,8 @@ export const validateFile = (
           reject('Error: El esquema no concuerda con los datos del archivo.');
           return;
         }
-        objFile = fileConverter(dataFile, schema, separator);
+        prueba = fileConverterObject(dataFile, schema, separator);
+        objFile = fileConverterRules(dataFile, schema, separator);
         schema.forEach((schema: InterfaceFile) => {
           if (schema.unique && schema.unique === true) {
             duplicateValue(objFile, schema, dataError);
@@ -65,7 +72,7 @@ export const validateFile = (
           if (schema.regex) {
             validReg(objFile, schema, dataError);
           }
-          if (schema.refIsGreaterDate) {
+          if (schema.dateValidations?.refIsGreaterDateNane) {
             validRefIsGreaterDate(objFile, schema, dataError);
           }
           if (schema.minLength && schema.minLength > 0) {
@@ -83,11 +90,17 @@ export const validateFile = (
           if (schema.isNumber && schema.isNumber === true) {
             validNumber(objFile, schema, dataError);
           }
-          if (schema.dateFormatReg) {
+          if (schema.dateValidations?.dateFormatReg) {
             validDateFormatReg(objFile, schema, dataError);
           }
           if (schema.conditionalData) {
             validConditionalData(objFile, schema, dataError);
+          }
+          if (schema.dateValidations?.majorToday) {
+            validMajorToday(objFile, schema, dataError);
+          }
+          if (schema.dateValidations?.minorToday) {
+            validMinorToday(objFile, schema, dataError);
           }
         });
         fileErrors = Array.from(new Set(dataError));
@@ -97,7 +110,8 @@ export const validateFile = (
           infoFile,
         });
       } catch (error) {
-        reject('Ha Ocurrido un error...');
+        console.log(error);
+        reject('Los nombre para las referencias entre columnas no concuerdan.');
       }
     };
   });

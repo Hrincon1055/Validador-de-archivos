@@ -1,5 +1,6 @@
 import { InterfaceFile } from '../models/schemaFile';
 import { regexMail, regxText, regexNumber } from '../constants/regex';
+import * as moment from 'moment';
 const indexFila: number = 1;
 export const duplicateValue = (
   objFile: any,
@@ -20,9 +21,7 @@ export const duplicateValue = (
   });
   if (repetidos.length > 0) {
     errorsSet.add(
-      `Error columna ${schema.name.toUpperCase()}, ${
-        schema.message ? schema.message : 'Contiene valores duplicados.'
-      }`
+      `Error columna ${schema.name.toUpperCase()}, Contiene valores duplicados.`
     );
   }
 };
@@ -81,11 +80,6 @@ export const validMinLength = (
           index + indexFila,
           'El campo tiene una longitud minima de caracteres'
         )
-        // `ERROR en la COLUMNA ${schema.name}, FILA ${index + indexFila}, ${
-        //   schema.message
-        //     ? schema.message
-        //     : `El campo solo permite minimo ${schema?.minLength} caracteres`
-        // }`
       );
   });
 };
@@ -102,11 +96,6 @@ export const validLength = (
           index + indexFila,
           'El campo debe de tener el numero de caracteres indicado'
         )
-        // `ERROR en la COLUMNA ${schema.name}, FILA ${index + indexFila}, ${
-        //   schema.message
-        //     ? schema.message
-        //     : 'El campo debe de tener el numero de caracteres indicado.'
-        // }(${schema?.length}).`
       );
   });
 };
@@ -123,11 +112,6 @@ export const validInclude = (
           index + indexFila,
           'El campo contine valores no validos'
         )
-        // `ERROR en la COLUMNA ${schema.name}, FILA ${index + indexFila}, ${
-        //   schema.message
-        //     ? schema.message
-        //     : 'El campo solo puede incluir los siguientes valores.'
-        // } (${schema?.include}).`
       );
   });
 };
@@ -138,7 +122,6 @@ export const validReg = (
 ): void => {
   objFile[schema.name].forEach((value: string, index: number) => {
     if (schema?.regex) {
-      console.log('rules LINE 127 =>', schema?.regex.reg.test(value));
       !schema?.regex.reg.test(value.toString()) &&
         errorsSet.add(
           messageError(schema.name, index + indexFila, schema?.regex.message)
@@ -151,32 +134,96 @@ export const validRefIsGreaterDate = (
   schema: InterfaceFile,
   errorsSet: Set<string>
 ): void => {
-  // TODO: validar que los nombre de fechas sean iguales
   objFile[schema.name].forEach(
     (valueFechaFin: string, indexFechaFin: number) => {
-      objFile[schema?.refIsGreaterDate!].forEach(
+      objFile[schema?.dateValidations?.refIsGreaterDateNane!].forEach(
         (valueFechaInicio: string, indexFechaInicio: number) => {
           if (indexFechaFin === indexFechaInicio) {
-            new Date(valueFechaInicio) > new Date(valueFechaFin) &&
+            let valueFechaInicioMoment = moment(
+              valueFechaInicio,
+              schema?.dateValidations?.dateFormatString
+            );
+            let valueFechaFinMoment = moment(
+              valueFechaFin,
+              schema?.dateValidations?.dateFormatString
+            );
+            let diffDate = valueFechaFinMoment.diff(
+              valueFechaInicioMoment,
+              'days'
+            );
+            if (diffDate < 0) {
               errorsSet.add(
                 messageError(
-                  schema?.refIsGreaterDate!,
+                  schema?.dateValidations?.refIsGreaterDateNane!,
                   indexFechaInicio + indexFila,
                   'La fecha de inicio no puede ser mayor a la fecha fin'
                 )
-                // `ERROR en la COLUMNA ${schema?.refIsGreaterDate}, FILA ${
-                //   indexFechaInicio + indexFila
-                // }, ${
-                //   schema.message
-                //     ? schema.message
-                //     : 'La fecha de inicio no puede ser mayor a la fecha fin.'
-                // }`
               );
+            }
           }
         }
       );
     }
   );
+};
+
+export const validMajorToday = (
+  objFile: any,
+  schema: InterfaceFile,
+  errorsSet: Set<string>
+): void => {
+  objFile[schema.name].forEach((value: string, index: number) => {
+    if (schema?.dateValidations?.majorToday) {
+      let today = moment().format(schema?.dateValidations?.dateFormatString);
+      let valueFechaInicioMoment = moment(
+        today,
+        schema?.dateValidations?.dateFormatString
+      );
+      let valueFechaFinMoment = moment(
+        value,
+        schema?.dateValidations?.dateFormatString
+      );
+      let diffDate = valueFechaFinMoment.diff(valueFechaInicioMoment, 'days');
+      if (diffDate < 0) {
+        errorsSet.add(
+          messageError(
+            schema?.name,
+            index + indexFila,
+            'La fecha tiene que ser mayor a la fecha actual'
+          )
+        );
+      }
+    }
+  });
+};
+export const validMinorToday = (
+  objFile: any,
+  schema: InterfaceFile,
+  errorsSet: Set<string>
+): void => {
+  objFile[schema.name].forEach((value: string, index: number) => {
+    if (schema?.dateValidations?.minorToday) {
+      let today = moment().format(schema?.dateValidations?.dateFormatString);
+      let valueFechaInicioMoment = moment(
+        today,
+        schema?.dateValidations?.dateFormatString
+      );
+      let valueFechaFinMoment = moment(
+        value,
+        schema?.dateValidations?.dateFormatString
+      );
+      let diffDate = valueFechaFinMoment.diff(valueFechaInicioMoment, 'days');
+      if (diffDate > 0) {
+        errorsSet.add(
+          messageError(
+            schema?.name,
+            index + indexFila,
+            'La fecha tiene que ser menor a la fecha actual'
+          )
+        );
+      }
+    }
+  });
 };
 export const validTetx = (
   objFile: any,
@@ -191,15 +238,9 @@ export const validTetx = (
           index + indexFila,
           'El Campo no puede contener caracteres expeciales'
         )
-        // `ERROR en la COLUMNA ${schema.name}, FILA ${index + indexFila}, ${
-        //   schema.message
-        //     ? schema.message
-        //     : `El Campo no puede contener caracteres expeciales.`
-        // }`
       );
   });
 };
-
 export const validNumber = (
   objFile: any,
   schema: InterfaceFile,
@@ -213,9 +254,6 @@ export const validNumber = (
           index + indexFila,
           'El Campo no es un numero valido'
         )
-        // `ERROR en la COLUMNA ${schema.name}, FILA ${index + indexFila}, ${
-        //   schema.message ? schema.message : `El Campo no es un numero valido.`
-        // }`
       );
   });
 };
@@ -225,19 +263,14 @@ export const validDateFormatReg = (
   errorsSet: Set<string>
 ): void => {
   objFile[schema.name].forEach((value: string, index: number) => {
-    if (schema?.dateFormatReg) {
-      !schema?.dateFormatReg.test(value) &&
+    if (schema?.dateValidations?.dateFormatReg) {
+      !schema?.dateValidations?.dateFormatReg.test(value) &&
         errorsSet.add(
           messageError(
             schema.name,
             index + indexFila,
             'El formato de la fecha no concuerda con la requerida'
           )
-          // `ERROR en la COLUMNA ${schema.name}, FILA ${index + indexFila}, ${
-          //   schema.message
-          //     ? schema.message
-          //     : 'El formato de la fecha no concuerda con la requerida.'
-          // }`
         );
     }
   });
@@ -262,13 +295,6 @@ export const validConditionalData = (
                   refIndex + indexFila,
                   `El campo solo puede contener datos validados por el campo ${schema.conditionalData?.refName}`
                 )
-                // `ERROR en la COLUMNA ${schema.name}, FILA ${
-                //   refIndex + indexFila
-                // }, ${
-                //   schema.message
-                //     ? schema.message
-                //     : `El campo solo puede contener datos validados por el campo ${schema.conditionalData?.refName}`
-                // }`
               );
             }
           }
@@ -282,5 +308,5 @@ const messageError = (
   numberFila: number,
   message: string = ''
 ): string => {
-  return `Error columna ${nameFila.toUpperCase()} Fila ${numberFila}. ${message}`;
+  return `Error columna ${nameFila.toUpperCase()} Fila ${numberFila}. ${message}.`;
 };
