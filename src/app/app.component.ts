@@ -14,40 +14,170 @@ export class AppComponent {
 
   public cargaMasiva: any[] = [
     {
-      pagador: {
-        nombre: 'Henry Rincon',
-        documentoId: '123456789',
-        ciudad: 'Bogota',
+      encabezado: {
+        registroControl: 0,
+        entidad: 0,
+        compannia: 0,
+        seccion: 0,
+        producto: 0,
+        fechaEnvio: '2022-08-25T21:06:10.909Z',
+        secuenciaEnvio: 0,
+        totalPolizas: 0,
+        tipoCargue: 0,
       },
-      beneficiarios: [
-        { nombre: 'B1', documentoId: 'ID1' },
-        { nombre: 'B2', documentoId: 'ID2' },
+      cargaMasiva: [
+        {
+          asegurado: {
+            numeroRiesgo: 0,
+            tipoDocumento: 'string',
+            documentoIdentificacion: 0,
+            apellidos: 'string',
+            nombres: 'string',
+            parentesco: 'string',
+            genero: 'string',
+            provincia: 'string',
+            canton: 'string',
+            distrito: 'string',
+            sennasEspecificas: 'string',
+            celular: 'string',
+            telefonoCasa: 'string',
+            telefonoOficinas: 'string',
+            fechaNacimiento: '2022-08-25T21:06:10.909Z',
+            edad: 0,
+            correo: 'string',
+            codigoOcupacionAsegurado: 'string',
+          },
+          poliza: {
+            tipoRegistro: 0,
+            transaccion: 0,
+            tipoProceso: 0,
+            moneda: 0,
+            periodicidad: 0,
+            producto: 0,
+            polizaPrincipal: 'string',
+            numeroPoliza: 0,
+            fechaInicio: '2022-08-25T21:06:10.909Z',
+            fechaVence: '2022-08-25T21:06:10.909Z',
+            causaModificacion: 0,
+            agente: 'string',
+            pluridadSeguros: 'string',
+            idUsuario: 'string',
+          },
+          conyuge: {
+            tipoDocumento: 'string',
+            documentoIdentificacion: 'string',
+            fechaNacimiento: '2022-08-25T21:06:10.909Z',
+            nombreCompleto: 'string',
+            parentesco: 0,
+          },
+          beneficiarios: [
+            {
+              numeroRiesgo: 0,
+              consecutivoBeneficiario: 0,
+              tipoDocumento: 'string',
+              numeroDocumento: 'string',
+              apellidos: 'string',
+              nombres: 'string',
+              porcentajeAsignacion: 0,
+              parentescoBeneficiario: 0,
+              calidad: 0,
+            },
+          ],
+          productos: {
+            ciudadRiesgo: 'string',
+            plan: 'string',
+            coberturas: 'string',
+            sumaAsegurada: 0,
+            costoPrima: 0,
+            alternativa: 0,
+          },
+          dependientes: [
+            {
+              numeroDependiente: 0,
+              tipoDocumento: 'string',
+              numeroDocumento: 'string',
+              fechaNacimiento: '2022-08-25T21:06:10.909Z',
+              nombreCompleto: 'string',
+              parentesco: 0,
+            },
+          ],
+          debitoAutomaticoCargaMasiva: {
+            entidadFinanciera: 0,
+            canalDescuento: 0,
+            numeroTarjetaCuenta: 0,
+            periodo: 0,
+            numeroCuotas: 0,
+            email: 'string',
+            fechaVencimientoTarjeta: 'string',
+          },
+          documentacionCargaMasiva: {
+            observaciones: 'string',
+            motivoAnulacion: 'string',
+          },
+          producto14353: {
+            tipoDocumento: 'string',
+            documentoIdentificacion: 'string',
+            ciudadRiesgo: 'string',
+            plan: 'string',
+            coberturas: 'string',
+            sumaAsegurada: 0,
+            costoPrima: 0,
+            alternativa: 0,
+            numeroCredito: 0,
+            fechaInicioCredito: 0,
+            fechaFinCredito: 0,
+            parentescoProducto: 0,
+            ocupacionAsegurado: 0,
+            direccion1: 'string',
+            direccion2: 'string',
+            direccion3: 'string',
+            direccion4: 'string',
+            direccion5: 'string',
+            direccion6: 'string',
+            direccion7: 'string',
+            numeroFolioReal: 0,
+            areaConstruccion: 0,
+            anioConstruccion: 0,
+            porcentajeDedicadoVivienda: 0,
+            valorAseguradoVivienda: 0,
+            tipoCredito: 'string',
+          },
+          producto50001: {
+            tipoDocumento: 'string',
+            documentoIdentificacion: 'string',
+            coberturas: 'string',
+            ciudadRiesgo: 'string',
+            ocupacionAsegurado: 0,
+            tipoCredito: 'string',
+            actividadLaboral: 0,
+            tipoContrato: 0,
+            ocupacion: 'string',
+            nombreEmpleador: 'string',
+            fechaVinculacion: 'string',
+            plan: 'string',
+            alternativa: 0,
+            cuotaCredito: 'string',
+            fechaAperturaCredito: 'string',
+            fechaFinCredito: 'string',
+            numeroCredito: 0,
+          },
+          producto71854: {
+            tipoDocumento: 'string',
+            documentoIdentificacion: 'string',
+            coberturas: 'string',
+            ciudadRiesgo: 'string',
+            ocupacionAsegurado: 0,
+            parentesco: 0,
+            sumaAsegurada: 0,
+            recargoSaludVida: 0,
+            recargoSaludItp: 0,
+            numeroCredito: 0,
+            fechaAperturaCredito: 'string',
+            fechaFinCredito: 'string',
+            tipoCredito: 'string',
+          },
+        },
       ],
-      conyugue: {},
-    },
-    {
-      pagador: {
-        nombre: 'Henry Rincon',
-        documentoId: '123456789',
-        ciudad: 'Bogota',
-      },
-      beneficiarios: [
-        { nombre: 'B1', documentoId: 'ID1' },
-        { nombre: 'B2', documentoId: 'ID2' },
-      ],
-      conyugue: {},
-    },
-    {
-      pagador: {
-        nombre: 'Henry Rincon',
-        documentoId: '123456789',
-        ciudad: 'Bogota',
-      },
-      beneficiarios: [
-        { nombre: 'B1', documentoId: 'ID1' },
-        { nombre: 'B2', documentoId: 'ID2' },
-      ],
-      conyugue: {},
     },
   ];
 
@@ -78,7 +208,10 @@ export class AppComponent {
       {
         name: 'tipo_documento',
         required: true,
-        include: ['CC', 'CI', 'TI'],
+        include: {
+          dataInclude: ['CC', 'CI', 'TI'],
+          message: 'Debe ser un tipo de identificacion valido',
+        },
         group: { nameGroup: 'pagador', type: 'object' },
       },
       {
@@ -109,7 +242,10 @@ export class AppComponent {
       {
         name: 'tipo_pago_id',
         required: true,
-        include: ['1', '2', '3'],
+        include: {
+          dataInclude: ['1', '2', '3'],
+          message: 'Debe ser un tipo pago valido',
+        },
         group: { nameGroup: 'pagador', type: 'object' },
       },
       {
@@ -120,7 +256,10 @@ export class AppComponent {
       {
         name: 'tipo_pago_detalle',
         required: true,
-        include: ['x', 'y', 'z'],
+        include: {
+          dataInclude: ['x', 'y', 'z'],
+          message: 'Debe ser un detalle pago valido',
+        },
         conditionalData: {
           refName: 'tipo_pago_id',
           objValidator: { '1': 'x', '2': 'y', '3': 'z' },
@@ -160,8 +299,12 @@ export class AppComponent {
         },
         group: { nameGroup: 'pagador', type: 'object' },
       },
+      {
+        name: 'porcentaja',
+        sumaPorcentaje: true,
+      },
     ]);
-    validateFile(myfileSchema.getFileModelSchema, fileUpload)
+    validateFile(myfileSchema.getFileModelSchema, fileUpload, 'S', ';')
       .then((response) => {
         console.log('app.component LINE 61 =>', response);
       })
