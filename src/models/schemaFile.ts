@@ -2,7 +2,7 @@ export interface InterfaceFile {
   name: string;
   required?: boolean;
   length?: number;
-  include?: string[];
+  include?: { dataInclude: string[], message: string; };
   unique?: boolean;
   maxLength?: number;
   minLength?: number;
@@ -13,6 +13,7 @@ export interface InterfaceFile {
   dateValidations?: DateValidations;
   conditionalData?: ConditionalData;
   conditionalLength?: ConditionalLength;
+  sumaPorcentaje?: boolean
   group?: { nameGroup: string; type: 'array' | 'object'; index?: number };
 }
 export interface ConditionalData {
