@@ -21,7 +21,7 @@ export const duplicateValue = (
   });
   if (repetidos.length > 0) {
     errorsSet.add(
-      `Error columna ${schema.name.toUpperCase()}, Contiene valores duplicados.`
+      `Error columna ${schema.name.toUpperCase().replace('_', ' ')}, Contiene valores duplicados.`
     );
   }
 };
@@ -105,12 +105,12 @@ export const validInclude = (
   errorsSet: Set<string>
 ): void => {
   objFile[schema.name].forEach((value: string, index: number) => {
-    !schema?.include!.includes(value) &&
+    !schema?.include?.dataInclude.includes(value) &&
       errorsSet.add(
         messageError(
           schema.name,
           index + indexFila,
-          'El campo contine valores no validos'
+          schema.include?.message
         )
       );
   });
@@ -331,6 +331,21 @@ export const validConditionalLength = (
     );
   }
 };
+export const validPorcentaje = (
+  objFile: any,
+  schema: InterfaceFile,
+  errorsSet: Set<string>
+): void => {
+  let sumaTotalPorcentaje: number = 0
+  objFile[schema.name].forEach((value: string, index: number) => {
+    sumaTotalPorcentaje += Number(value)
+  });
+  if (Math.round(sumaTotalPorcentaje) !== 100) {
+    errorsSet.add(
+      `Error columna ${schema.name.toUpperCase().replace('_', ' ')}, El porcentaje de asignación.`
+    );
+  }
+}
 
 const messageError = (
   nameFila: string,
