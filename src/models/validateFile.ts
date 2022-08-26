@@ -20,6 +20,7 @@ import {
   validConditionalData,
   validMajorToday,
   validMinorToday,
+  validConditionalLength,
 } from '../helpers/rules';
 
 export const validateFile = (
@@ -95,6 +96,9 @@ export const validateFile = (
           }
           if (schema.conditionalData) {
             validConditionalData(objFile, schema, dataError);
+          }
+          if (schema.conditionalLength) {
+            validConditionalLength(objFile, schema, dataError);
           }
           if (schema.dateValidations?.majorToday) {
             validMajorToday(objFile, schema, dataError);

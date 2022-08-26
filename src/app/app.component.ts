@@ -68,7 +68,11 @@ export class AppComponent {
         name: 'numero_documento',
         required: true,
         unique: true,
-        minLength: 8,
+        // minLength: 8,
+        conditionalLength: {
+          refName: 'tipo_documento',
+          objValidator: { CC: 9, CI: 8, TI: 8 },
+        },
         group: { nameGroup: 'pagador', type: 'object' },
       },
       {
@@ -89,7 +93,7 @@ export class AppComponent {
         required: true,
         dateValidations: {
           dateFormatReg: /(0[1-9]|[12][0-9]|3[01])(0[1-9]|1[012])(19|20)\d\d/,
-          dateFormatString: 'DD MM YYYY',
+          dateFormatString: 'YYYY-MM-DD',
         },
         group: { nameGroup: 'pagador', type: 'object' },
       },

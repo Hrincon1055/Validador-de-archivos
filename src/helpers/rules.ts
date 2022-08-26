@@ -303,10 +303,41 @@ export const validConditionalData = (
     );
   }
 };
+export const validConditionalLength = (
+  objFile: any,
+  schema: InterfaceFile,
+  errorsSet: Set<string>
+): void => {
+  if (schema.conditionalLength?.refName) {
+    objFile[schema.conditionalLength?.refName].forEach(
+      (refValue: string, refIndex: number) => {
+        objFile[schema.name].forEach((value: string, index: number) => {
+          if (refIndex === index) {
+            if (
+              value.trim().length !==
+              schema.conditionalLength?.objValidator[refValue]
+            ) {
+              errorsSet.add(
+                messageError(
+                  schema.name,
+                  refIndex + indexFila,
+                  `El campo de debe contener ${schema.conditionalLength?.objValidator[refValue]} caracteres`
+                )
+              );
+            }
+          }
+        });
+      }
+    );
+  }
+};
+
 const messageError = (
   nameFila: string,
   numberFila: number,
   message: string = ''
 ): string => {
-  return `Error columna ${nameFila.toUpperCase()} Fila ${numberFila}. ${message}.`;
+  return `Error columna ${nameFila
+    .toUpperCase()
+    .replace('_', ' ')} Fila ${numberFila}. ${message}.`;
 };

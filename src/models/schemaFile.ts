@@ -12,12 +12,19 @@ export interface InterfaceFile {
   regex?: Regex;
   dateValidations?: DateValidations;
   conditionalData?: ConditionalData;
+  conditionalLength?: ConditionalLength;
   group?: { nameGroup: string; type: 'array' | 'object'; index?: number };
 }
 export interface ConditionalData {
   refName: string;
   objValidator: {
     [key: string]: string;
+  };
+}
+export interface ConditionalLength {
+  refName: string;
+  objValidator: {
+    [key: string]: number;
   };
 }
 export interface DateValidations {
